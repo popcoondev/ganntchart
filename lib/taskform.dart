@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:ganntchart/taskdata.dart';
+import 'package:realm/realm.dart';
 
 class TaskForm extends StatefulWidget {
   @override
@@ -91,6 +93,29 @@ class _TaskFormState extends State<TaskForm> {
                         // debugPrint(_taskDateRange?.start);
                         // debugPrint(_taskDateRange?.end);
 
+                        var config = Configuration([Task.schema]);
+                        var realm = Realm(config);
+                        var task = Task(
+                            _taskTitle,
+                            _taskDetail,
+                            dropdownValue,
+                            "",
+                            "",
+                            "",
+                            "",
+                            // _taskDateRange.start.toString(),
+                            // _taskDateRange.end.toString(),
+                            // DateTime.now().toString(),
+                            // DateTime.now().toString(),
+                        );
+                        realm.write(() {
+                          realm.add(task);
+                        });
+
+                        var tasks = realm.all<Task>();
+                        tasks.forEach((task) {
+                          debugPrint('${task.title}, ${task.detail}, ${task.status}');
+                        });
 
                       },
                       child: const Text('Save'),
