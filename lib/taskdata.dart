@@ -1,10 +1,9 @@
-import 'package:flutter/material.dart';
 import 'package:realm/realm.dart';  // import realm package
 import 'dart:io';
 
-part 'taskdata.g.dart'; // declare a part file.
+part 'task_data.g.dart'; // declare a part file.
 
-// generate command:
+// generate command
 // >flutter pub run realm generate
 @RealmModel()
 class _Task {

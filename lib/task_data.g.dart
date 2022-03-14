@@ -8,14 +8,14 @@ part of 'taskdata.dart';
 
 class Task extends _Task with RealmObject {
   Task(
-    String title,
-    String detail,
-    String status,
-    String startDate,
-    String endDate,
-    String createdTimestamp,
-    String modifiedTimestamp,
-  ) {
+      String title,
+      String detail,
+      String status,
+      String startDate,
+      String endDate,
+      String createdTimestamp,
+      String modifiedTimestamp,
+      ) {
     this.title = title;
     this.detail = detail;
     this.status = status;

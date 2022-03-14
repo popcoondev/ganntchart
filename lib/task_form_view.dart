@@ -1,8 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/taskdata.dart';
 import 'package:realm/realm.dart';
 
 class TaskForm extends StatefulWidget {
+  List<TaskItem> listItems = <TaskItem>[];
+  int target = -1;
+
+  TaskForm({Key? key, required this.listItems, target}) : super(key: key);
+
   @override
   State<StatefulWidget> createState() => _TaskFormState();
 
@@ -11,25 +17,36 @@ class TaskForm extends StatefulWidget {
 class _TaskFormState extends State<TaskForm> {
   String _taskTitle = "";
   String _taskDetail = "";
-  int _taskStatus = 0;
+  String _taskStatus = 'TODO';
   late DateTimeRange _taskDateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
+  int _startDate = 0;
+  int _endDate = 0;
   // late TimeRanges _taskTimeRange;
 
   TextEditingController _taskTitleController = TextEditingController();
   TextEditingController _taskDetailController = TextEditingController();
-  String dropdownValue = 'TODO';
 
 
   @override
   void initState() {
     super.initState();
-    debugPrint('initState');
+    debugPrint('_TaskFormState initState');
+    int target = widget.target;
+    if(target > -1) {
+      TaskItem item = widget.listItems[target];
+      // _taskTitle = item.task.title;
+      // _taskDetail = item.task.detail;
+      // _taskStatus = item.task.status;
+      // _startDate = item.task.startDate;
+      // _endDate = item.task.endDate;
 
+    }
 
   }
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('_TaskFormState build');
     return Container(
         child: SingleChildScrollView(
             child:Form(
@@ -54,10 +71,10 @@ class _TaskFormState extends State<TaskForm> {
                       onChanged: (text) => { _taskDetail = text },
                     ),
                     DropdownButton<String>(
-                      value: dropdownValue,
+                      value: _taskStatus,
                       onChanged: (String? newValue) {
                         setState(() {
-                          dropdownValue = newValue!;
+                          _taskStatus = newValue!;
                         });
                       },
                       items: <String>['TODO', 'IN PROGRESS', 'IN REVIEW', 'DONE']
@@ -89,24 +106,20 @@ class _TaskFormState extends State<TaskForm> {
                       onPressed: () {
                         debugPrint(_taskTitle);
                         debugPrint(_taskDetail);
-                        debugPrint(dropdownValue);
+                        debugPrint(_taskStatus);
                         // debugPrint(_taskDateRange?.start);
                         // debugPrint(_taskDateRange?.end);
-
+                        //
                         var config = Configuration([Task.schema]);
                         var realm = Realm(config);
                         var task = Task(
                             _taskTitle,
                             _taskDetail,
-                            dropdownValue,
+                            _taskStatus,
                             "",
                             "",
                             "",
                             "",
-                            // _taskDateRange.start.toString(),
-                            // _taskDateRange.end.toString(),
-                            // DateTime.now().toString(),
-                            // DateTime.now().toString(),
                         );
                         realm.write(() {
                           realm.add(task);
@@ -115,6 +128,28 @@ class _TaskFormState extends State<TaskForm> {
                         var tasks = realm.all<Task>();
                         tasks.forEach((task) {
                           debugPrint('${task.title}, ${task.detail}, ${task.status}');
+                        });
+
+                        setState(() {
+                          debugPrint("addTaskItem");
+                          widget.listItems.add(TaskItem(
+                              task: Task(
+                                _taskTitle,
+                                _taskDetail,
+                                _taskStatus,
+                                "",
+                                "",
+                                "",
+                                "",
+                              )
+                          ));
+
+                          _taskTitleController.text = '';
+                          _taskDetailController.text = '';
+                          _taskTitle = '';
+                          _taskDetail = '';
+                          _taskStatus = 'TODO';
+
                         });
 
                       },
