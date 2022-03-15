@@ -15,12 +15,22 @@ class TaskItem extends StatefulWidget {
 
 class _TaskItemState extends State<TaskItem> {
 
-  void _gotoTaskForm() {
+  void _gotoTaskForm() async {
+    Task editTask = await Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return TaskEditPage(title: 'Edit Task', task: widget.task);
+    }));
+
+    setState(() {
+      if(editTask != null) {
+        widget.task = editTask;
+      }
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
-    debugPrint("TaskItem " + widget.task.title);
+    // debugPrint('_TaskItemState build ${widget.task.title}');
     Icon icon = Icon(Icons.task);
     if(widget.task.status == 'DONE') {
       icon = Icon(Icons.done);

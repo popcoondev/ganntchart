@@ -4,10 +4,10 @@ import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/taskdata.dart';
 
 class TaskEditPage extends StatefulWidget {
-  List<TaskItem> listItems = [];
-
-  TaskEditPage({Key? key, required this.title, required List<TaskItem> this.listItems}) : super(key: key);
   final String title;
+  Task task;
+
+  TaskEditPage({Key? key, required this.title, required this.task}) : super(key: key);
 
 
   @override
@@ -15,8 +15,10 @@ class TaskEditPage extends StatefulWidget {
 }
 
 class _TaskEditPageState extends State<TaskEditPage> {
+
   @override
   Widget build(BuildContext context) {
+    debugPrint('_TaskEditPageState build ${widget.task.title}');
 
     return Scaffold(
         appBar: AppBar(
@@ -26,11 +28,17 @@ class _TaskEditPageState extends State<TaskEditPage> {
         child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          TaskForm(listItems: widget.listItems),
+          TaskForm(task: widget.task, onSave: _onSave,),
         ],
        ),
       ),
     );
+  }
+
+  void _onSave(Task task) {
+    debugPrint('_onSave ${task.title}');
+    Navigator.pop(context, task);
+
   }
 
 }

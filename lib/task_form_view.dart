@@ -4,10 +4,10 @@ import 'package:ganntchart/taskdata.dart';
 import 'package:realm/realm.dart';
 
 class TaskForm extends StatefulWidget {
-  List<TaskItem> listItems = <TaskItem>[];
-  int target = -1;
+  Task? task;
+  Function(Task)? onSave;
 
-  TaskForm({Key? key, required this.listItems, target}) : super(key: key);
+  TaskForm({Key? key, required this.task, this.onSave}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _TaskFormState();
@@ -15,12 +15,13 @@ class TaskForm extends StatefulWidget {
 }
 
 class _TaskFormState extends State<TaskForm> {
+  int _taskId = -1; //uniqkey
   String _taskTitle = "";
   String _taskDetail = "";
   String _taskStatus = 'TODO';
   late DateTimeRange _taskDateRange = DateTimeRange(start: DateTime.now(), end: DateTime.now());
-  int _startDate = 0;
-  int _endDate = 0;
+  int _startDate = -1;
+  int _endDate = -1;
   // late TimeRanges _taskTimeRange;
 
   TextEditingController _taskTitleController = TextEditingController();
@@ -31,15 +32,15 @@ class _TaskFormState extends State<TaskForm> {
   void initState() {
     super.initState();
     debugPrint('_TaskFormState initState');
-    int target = widget.target;
-    if(target > -1) {
-      TaskItem item = widget.listItems[target];
-      // _taskTitle = item.task.title;
-      // _taskDetail = item.task.detail;
-      // _taskStatus = item.task.status;
-      // _startDate = item.task.startDate;
-      // _endDate = item.task.endDate;
 
+    if(widget.task != null) {
+      Task task = widget.task!;
+      _taskTitle = task.title;
+      _taskDetail = task.detail;
+      _taskStatus = task.status;
+      _startDate = task.startDate;
+      _endDate = task.endDate;
+      _taskTitleController = TextEditingController(text: _taskTitle);
     }
 
   }
@@ -47,6 +48,7 @@ class _TaskFormState extends State<TaskForm> {
   @override
   Widget build(BuildContext context) {
     debugPrint('_TaskFormState build');
+
     return Container(
         child: SingleChildScrollView(
             child:Form(
@@ -60,7 +62,7 @@ class _TaskFormState extends State<TaskForm> {
                       ),
                       onChanged: (text) => { _taskTitle = text },
                     ),
-                    TextField(
+                    TextFormField(
                       controller: _taskDetailController,
                       keyboardType: TextInputType.multiline,
                       maxLines: 10,
@@ -104,54 +106,36 @@ class _TaskFormState extends State<TaskForm> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        debugPrint(_taskTitle);
-                        debugPrint(_taskDetail);
-                        debugPrint(_taskStatus);
-                        // debugPrint(_taskDateRange?.start);
-                        // debugPrint(_taskDateRange?.end);
-                        //
                         var config = Configuration([Task.schema]);
                         var realm = Realm(config);
-                        var task = Task(
+
+                        Task task = Task(
+                            _taskId,
                             _taskTitle,
                             _taskDetail,
                             _taskStatus,
-                            "",
-                            "",
-                            "",
-                            "",
+                            _startDate,
+                            _endDate,
+                            0,
+                            0,
                         );
                         realm.write(() {
                           realm.add(task);
                         });
 
-                        var tasks = realm.all<Task>();
-                        tasks.forEach((task) {
-                          debugPrint('${task.title}, ${task.detail}, ${task.status}');
-                        });
+                        // var tasks = realm.all<Task>();
+                        // tasks.forEach((task) {
+                        //   debugPrint('${task.title}, ${task.detail}, ${task.status}');
+                        // });
 
-                        setState(() {
-                          debugPrint("addTaskItem");
-                          widget.listItems.add(TaskItem(
-                              task: Task(
-                                _taskTitle,
-                                _taskDetail,
-                                _taskStatus,
-                                "",
-                                "",
-                                "",
-                                "",
-                              )
-                          ));
+                        widget.task = task;
+                        _taskTitleController.text = '';
+                        _taskDetailController.text = '';
+                        _taskTitle = '';
+                        _taskDetail = '';
+                        _taskStatus = 'TODO';
 
-                          _taskTitleController.text = '';
-                          _taskDetailController.text = '';
-                          _taskTitle = '';
-                          _taskDetail = '';
-                          _taskStatus = 'TODO';
-
-                        });
-
+                        widget.onSave!(task); //callback
                       },
                       child: const Text('Save'),
 

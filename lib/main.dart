@@ -3,6 +3,7 @@ import 'package:flutter_redux/flutter_redux.dart';
 import 'package:ganntchart/redux/action/actions.dart';
 import 'package:ganntchart/redux/reducer/app_state_reducer.dart';
 import 'package:ganntchart/redux/state/app_state.dart';
+import 'package:ganntchart/task_create_page.dart';
 import 'package:ganntchart/task_edit_page.dart';
 import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/task_list_view.dart';
@@ -67,7 +68,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   DateTime _today = DateTime.now();
-  List<TaskItem> listItems = <TaskItem>[];
+  List<Task> listItems = <Task>[];
   // late GlobalObjectKey<TaskListState> listViewKey;
 
   void _incrementCounter() {
@@ -88,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var realm = Realm(config);
     var tasks = realm.all<Task>();
     tasks.forEach((task) {
-      listItems.add(TaskItem(task: Task(
+      listItems.add(Task(
         task.title,
         task.detail,
         task.status,
@@ -96,16 +97,23 @@ class _MyHomePageState extends State<MyHomePage> {
         "",
         "",
         "",
-      )));
+      ));
     });
   }
 
-  void _gotoTaskForm() {
-    Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return TaskEditPage(title: 'Add Task', listItems: listItems);
-    }
-
-    ));
+  Future<void> _gotoTaskForm() async {
+    debugPrint('_gotoTaskForm 1');
+    Task? newTask = await Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return TaskCreatePage(title: 'Add Task');
+    }));
+    debugPrint('_gotoTaskForm 2');
+    setState(() {
+      if(newTask != null) {
+        debugPrint('_gotoTaskForm 3');
+        listItems.add(newTask);
+      }
+    });
+    debugPrint('_gotoTaskForm 4');
   }
 
   @override

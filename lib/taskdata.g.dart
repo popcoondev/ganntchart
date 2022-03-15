@@ -8,14 +8,16 @@ part of 'taskdata.dart';
 
 class Task extends _Task with RealmObject {
   Task(
-      String title,
-      String detail,
-      String status,
-      String startDate,
-      String endDate,
-      String createdTimestamp,
-      String modifiedTimestamp,
-      ) {
+    int id,
+    String title,
+    String detail,
+    String status,
+    int startDate,
+    int endDate,
+    int createdTimestamp,
+    int modifiedTimestamp,
+  ) {
+    RealmObject.set(this, 'id', id);
     this.title = title;
     this.detail = detail;
     this.status = status;
@@ -26,6 +28,11 @@ class Task extends _Task with RealmObject {
   }
 
   Task._();
+
+  @override
+  int get id => RealmObject.get<int>(this, 'id') as int;
+  @override
+  set id(int value) => throw RealmUnsupportedSetError();
 
   @override
   String get title => RealmObject.get<String>(this, 'title') as String;
@@ -43,27 +50,27 @@ class Task extends _Task with RealmObject {
   set status(String value) => RealmObject.set(this, 'status', value);
 
   @override
-  String get startDate => RealmObject.get<String>(this, 'startDate') as String;
+  int get startDate => RealmObject.get<int>(this, 'startDate') as int;
   @override
-  set startDate(String value) => RealmObject.set(this, 'startDate', value);
+  set startDate(int value) => RealmObject.set(this, 'startDate', value);
 
   @override
-  String get endDate => RealmObject.get<String>(this, 'endDate') as String;
+  int get endDate => RealmObject.get<int>(this, 'endDate') as int;
   @override
-  set endDate(String value) => RealmObject.set(this, 'endDate', value);
+  set endDate(int value) => RealmObject.set(this, 'endDate', value);
 
   @override
-  String get createdTimestamp =>
-      RealmObject.get<String>(this, 'createdTimestamp') as String;
+  int get createdTimestamp =>
+      RealmObject.get<int>(this, 'createdTimestamp') as int;
   @override
-  set createdTimestamp(String value) =>
+  set createdTimestamp(int value) =>
       RealmObject.set(this, 'createdTimestamp', value);
 
   @override
-  String get modifiedTimestamp =>
-      RealmObject.get<String>(this, 'modifiedTimestamp') as String;
+  int get modifiedTimestamp =>
+      RealmObject.get<int>(this, 'modifiedTimestamp') as int;
   @override
-  set modifiedTimestamp(String value) =>
+  set modifiedTimestamp(int value) =>
       RealmObject.set(this, 'modifiedTimestamp', value);
 
   static SchemaObject get schema => _schema ??= _initSchema();
@@ -71,13 +78,14 @@ class Task extends _Task with RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(Task._);
     return const SchemaObject(Task, [
+      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
       SchemaProperty('title', RealmPropertyType.string),
       SchemaProperty('detail', RealmPropertyType.string),
       SchemaProperty('status', RealmPropertyType.string),
-      SchemaProperty('startDate', RealmPropertyType.string),
-      SchemaProperty('endDate', RealmPropertyType.string),
-      SchemaProperty('createdTimestamp', RealmPropertyType.string),
-      SchemaProperty('modifiedTimestamp', RealmPropertyType.string),
+      SchemaProperty('startDate', RealmPropertyType.int),
+      SchemaProperty('endDate', RealmPropertyType.int),
+      SchemaProperty('createdTimestamp', RealmPropertyType.int),
+      SchemaProperty('modifiedTimestamp', RealmPropertyType.int),
     ]);
   }
 }
