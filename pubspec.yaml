@@ -38,6 +38,8 @@ dependencies:
   redux: ^5.0.0
   flutter_redux: ^0.8.2
   flutter_hooks: ^0.18.2+1
+  uuid: ^3.0.6
+  syncfusion_flutter_calendar: ^19.4.56
 
 dev_dependencies:
   flutter_test:

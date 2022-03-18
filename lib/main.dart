@@ -4,6 +4,7 @@ import 'package:ganntchart/redux/action/actions.dart';
 import 'package:ganntchart/redux/reducer/app_state_reducer.dart';
 import 'package:ganntchart/redux/state/app_state.dart';
 import 'package:ganntchart/task_create_page.dart';
+import 'package:ganntchart/task_data_repository.dart';
 import 'package:ganntchart/task_edit_page.dart';
 import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/task_list_view.dart';
@@ -35,24 +36,6 @@ class MyApp extends StatelessWidget {
             ),
             home: const MyHomePage(title: 'GanntChart'),
         );
-    // return StoreProvider(
-    //     store: store,
-    //     child: MaterialApp(
-    //     title: 'GanntChart',
-    //     theme: ThemeData(
-    //       primarySwatch: Colors.amber,
-    //     ),
-    //     // home: const MyHomePage(title: 'GanntChart'),
-    //       home: StoreConnector(
-    //         distinct: true,
-    //         onInit: (store) => store.dispatch(LoadingAction),
-    //         converter: (store) => true,
-    //         builder: (context, _) {
-    //           return MyHomePage(title: 'Gannt');
-    //         }
-    //       )
-    //   ),
-    // );
   }
 }
 
@@ -85,35 +68,41 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    updateList();
+  }
+
+  void updateList() {
     var config = Configuration([Task.schema]);
     var realm = Realm(config);
-    var tasks = realm.all<Task>();
+    RealmResults<Task> tasks = TaskDataRepository().readAll();
     tasks.forEach((task) {
       listItems.add(Task(
+        task.id,
         task.title,
         task.detail,
         task.status,
-        "",
-        "",
-        "",
-        "",
+        task.startDate,
+        task.endDate,
+        task.createdTimestamp,
+        task.modifiedTimestamp,
       ));
     });
   }
 
-  Future<void> _gotoTaskForm() async {
-    debugPrint('_gotoTaskForm 1');
-    Task? newTask = await Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
-      return TaskCreatePage(title: 'Add Task');
+  void _gotoTaskForm() async {
+    debugPrint('_gotoTaskForm');
+    await Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+      return TaskEditPage(title: 'Add Task', onSave: _onSave, task: null,);
     }));
-    debugPrint('_gotoTaskForm 2');
+  }
+  
+  void _onSave(task) {
+    debugPrint('main onsave ${task.title}');
+    TaskDataRepository().add(task);
     setState(() {
-      if(newTask != null) {
-        debugPrint('_gotoTaskForm 3');
-        listItems.add(newTask);
-      }
+      listItems.add(task);
+
     });
-    debugPrint('_gotoTaskForm 4');
   }
 
   @override
@@ -128,14 +117,6 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            // const Text(
-            //   'You have pushed the button this many times:',
-            // ),
-            // Text(
-            //   '$_today',
-            //   style: Theme.of(context).textTheme.headline4,
-            // ),
-            // TaskForm(listItems: listItems),
             TaskList(listItems: listItems)
           ],
         ),

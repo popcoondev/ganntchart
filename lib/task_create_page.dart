@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:ganntchart/task_data_repository.dart';
 import 'package:ganntchart/task_form_view.dart';
 import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/taskdata.dart';
+import 'package:realm/realm.dart';
 
 class TaskCreatePage extends StatefulWidget {
   final String title;
@@ -37,7 +39,21 @@ class _TaskCreatePageState extends State<TaskCreatePage> {
 
   void _onSave(Task task) {
     debugPrint('_onSave ${task.title}');
-    Navigator.pop(context, task);
+    // TaskDataRepository repository = TaskDataRepository();
+    // repository.readAll();
+    // repository.write(task, false);
+
+    var config = Configuration([Task.schema]);
+    var realm = Realm(config);
+    RealmResults<Task> list = realm.all<Task>();
+    list.forEach((task) {
+      debugPrint('${task.id} ${task.title}');
+    });
+    realm.write(() {
+      realm.add(task);
+    });
+    realm.close();
+    Navigator.pop(context);
   }
 
 }

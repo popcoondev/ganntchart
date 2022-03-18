@@ -8,7 +8,7 @@ part 'taskdata.g.dart'; // declare a part file.
 @RealmModel()
 class _Task {
   @PrimaryKey()
-  late final int id;
+  late final String id;
 
   late String title;
   late String detail;

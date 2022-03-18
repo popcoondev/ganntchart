@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/taskdata.dart';
 import 'package:realm/realm.dart';
+import 'package:uuid/uuid.dart';
 
 class TaskForm extends StatefulWidget {
   Task? task;
@@ -15,7 +16,7 @@ class TaskForm extends StatefulWidget {
 }
 
 class _TaskFormState extends State<TaskForm> {
-  int _taskId = -1; //uniqkey
+  String _taskId = ""; //uniqkey
   String _taskTitle = "";
   String _taskDetail = "";
   String _taskStatus = 'TODO';
@@ -35,12 +36,16 @@ class _TaskFormState extends State<TaskForm> {
 
     if(widget.task != null) {
       Task task = widget.task!;
+      _taskId = task.id;
       _taskTitle = task.title;
       _taskDetail = task.detail;
       _taskStatus = task.status;
       _startDate = task.startDate;
       _endDate = task.endDate;
       _taskTitleController = TextEditingController(text: _taskTitle);
+    }
+    else {
+      _taskId = Uuid().v4();
     }
 
   }
@@ -106,9 +111,6 @@ class _TaskFormState extends State<TaskForm> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        var config = Configuration([Task.schema]);
-                        var realm = Realm(config);
-
                         Task task = Task(
                             _taskId,
                             _taskTitle,
@@ -119,23 +121,18 @@ class _TaskFormState extends State<TaskForm> {
                             0,
                             0,
                         );
-                        realm.write(() {
-                          realm.add(task);
-                        });
-
-                        // var tasks = realm.all<Task>();
-                        // tasks.forEach((task) {
-                        //   debugPrint('${task.title}, ${task.detail}, ${task.status}');
-                        // });
-
                         widget.task = task;
+
+                        //UI reset
+                        _taskId = Uuid().v4();
                         _taskTitleController.text = '';
                         _taskDetailController.text = '';
                         _taskTitle = '';
                         _taskDetail = '';
                         _taskStatus = 'TODO';
 
-                        widget.onSave!(task); //callback
+                        //callback
+                        widget.onSave!(task);
                       },
                       child: const Text('Save'),
 

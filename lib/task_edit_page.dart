@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:ganntchart/task_data_repository.dart';
 import 'package:ganntchart/task_form_view.dart';
 import 'package:ganntchart/task_item_view.dart';
 import 'package:ganntchart/taskdata.dart';
+import 'package:realm/realm.dart';
 
 class TaskEditPage extends StatefulWidget {
   final String title;
-  Task task;
+  Task? task;
+  Function(Task)? onSave;
 
-  TaskEditPage({Key? key, required this.title, required this.task}) : super(key: key);
+  TaskEditPage({Key? key, required this.title, required this.task, this.onSave}) : super(key: key);
 
 
   @override
@@ -18,7 +21,7 @@ class _TaskEditPageState extends State<TaskEditPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('_TaskEditPageState build ${widget.task.title}');
+    debugPrint('_TaskEditPageState build ${widget.task?.title}');
 
     return Scaffold(
         appBar: AppBar(
@@ -36,9 +39,10 @@ class _TaskEditPageState extends State<TaskEditPage> {
   }
 
   void _onSave(Task task) {
-    debugPrint('_onSave ${task.title}');
-    Navigator.pop(context, task);
-
+    widget.onSave!(task);
+    Navigator.pop(context);
   }
+
+
 
 }

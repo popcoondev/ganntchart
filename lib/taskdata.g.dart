@@ -8,7 +8,7 @@ part of 'taskdata.dart';
 
 class Task extends _Task with RealmObject {
   Task(
-    int id,
+    String id,
     String title,
     String detail,
     String status,
@@ -30,9 +30,9 @@ class Task extends _Task with RealmObject {
   Task._();
 
   @override
-  int get id => RealmObject.get<int>(this, 'id') as int;
+  String get id => RealmObject.get<String>(this, 'id') as String;
   @override
-  set id(int value) => throw RealmUnsupportedSetError();
+  set id(String value) => throw RealmUnsupportedSetError();
 
   @override
   String get title => RealmObject.get<String>(this, 'title') as String;
@@ -78,7 +78,7 @@ class Task extends _Task with RealmObject {
   static SchemaObject _initSchema() {
     RealmObject.registerFactory(Task._);
     return const SchemaObject(Task, [
-      SchemaProperty('id', RealmPropertyType.int, primaryKey: true),
+      SchemaProperty('id', RealmPropertyType.string, primaryKey: true),
       SchemaProperty('title', RealmPropertyType.string),
       SchemaProperty('detail', RealmPropertyType.string),
       SchemaProperty('status', RealmPropertyType.string),
